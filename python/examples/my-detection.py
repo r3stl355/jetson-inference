@@ -20,16 +20,25 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
+import datetime as dt
+import time
 
 import jetson.inference
 import jetson.utils
+
 
 net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.4)
 camera = jetson.utils.videoSource("/dev/video0")      # '/dev/video0' for V4L2
 display = jetson.utils.videoOutput("display://0") # 'my_video.mp4' for file
 
+start = dt.datetime.now()
+i = 0
 while display.IsStreaming():
 	img = camera.Capture()
 	detections = net.Detect(img)
 	display.Render(img)
-	display.SetStatus("Object Detection | Network {:.0f} FPS".format(net.GetNetworkFPS()))
+	fps = net.GetNetworkFPS()
+	display.SetStatus("Object Detection | {:.0f} FPS".format(fps))
+	if i % 1000 == 0:
+		print(f'Running for: {dt.datetime.now() - start}, Current FPS: {fps}')
+
