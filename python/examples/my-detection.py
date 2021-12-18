@@ -26,9 +26,9 @@ while display.IsStreaming():
 			h, rem = divmod(ds, 3600)
 			m, s = divmod(rem, 60)
 			if h > 0:
-				msg = '{} hours {} minutes {} seconds'.format(int(h), int(m), int(s))
+				msg = '{} hours {} minutes'.format(int(h), int(m))
 			elif m > 0:
-				msg = '{} minutes {} seconds'.format(int(m), int(s))
+				msg = '{} minutes'.format(int(m))
 			else:
 				msg = '{} seconds'.format(int(s))
 			print(f'- running for: {msg}, Current FPS: {fps}')
