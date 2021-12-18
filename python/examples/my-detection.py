@@ -20,9 +20,9 @@ while display.IsStreaming():
 	fps = net.GetNetworkFPS()
 	display.SetStatus("Object Detection | {:.0f} FPS".format(fps))
 	if i % 100 == 0:
-		dt = dt.datetime.now() - checkpoint
-		if  dt.total_seconds() > 30:
-			h, rem = divmod(dt.total_seconds(), 3600)
+		delta = dt.datetime.now() - checkpoint
+		if  delta.total_seconds() > 30:
+			h, rem = divmod(delta.total_seconds(), 3600)
 			m, s = divmod(rem, 60)
 			if h > 0:
 				msg = '{:02} hours {:02} minutes {:02} seconds'.format(int(h), int(m), int(s))
