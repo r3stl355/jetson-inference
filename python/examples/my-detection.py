@@ -41,4 +41,5 @@ while display.IsStreaming():
 	display.SetStatus("Object Detection | {:.0f} FPS".format(fps))
 	if i % 1000 == 0:
 		print(f'Running for: {dt.datetime.now() - start}, Current FPS: {fps}')
+	i += 1
 
