@@ -31,7 +31,7 @@ while display.IsStreaming():
 				msg = '{:02} minutes {:02} seconds'.format(int(m), int(s))
 			else:
 				msg = '{:02} seconds'.format(int(s))
-			print(f'- running for: {msg}, Current FPS: {fps})')
+			print(f'- running for: {msg}, Current FPS: {fps}')
 
 			checkpoint = dt.datetime.now()
 			i = 0
