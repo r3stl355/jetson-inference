@@ -1,25 +1,5 @@
 #!/usr/bin/python3
-#
-# Copyright (c) 2019, NVIDIA CORPORATION. All rights reserved.
-#
-# Permission is hereby granted, free of charge, to any person obtaining a
-# copy of this software and associated documentation files (the "Software"),
-# to deal in the Software without restriction, including without limitation
-# the rights to use, copy, modify, merge, publish, distribute, sublicense,
-# and/or sell copies of the Software, and to permit persons to whom the
-# Software is furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# DEALINGS IN THE SOFTWARE.
-#
+
 import datetime as dt
 import time
 
@@ -27,9 +7,9 @@ import jetson.inference
 import jetson.utils
 
 
-net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.4)
-camera = jetson.utils.videoSource("/dev/video0")      # '/dev/video0' for V4L2
-display = jetson.utils.videoOutput("display://0") # 'my_video.mp4' for file
+net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.6)
+camera = jetson.utils.videoSource("/dev/video0") 
+display = jetson.utils.videoOutput("display://0")
 
 start = dt.datetime.now()
 i = 0
@@ -39,7 +19,18 @@ while display.IsStreaming():
 	display.Render(img)
 	fps = net.GetNetworkFPS()
 	display.SetStatus("Object Detection | {:.0f} FPS".format(fps))
-	if i % 1000 == 0:
-		print(f'Running for: {dt.datetime.now() - start}, Current FPS: {fps}')
+	if i % 100 == 0:
+		seconds = dt.datetime.now() - start
+		if  s > 30:
+			h, rem = divmod(s, 3600)
+			m, s = divmod(rem, 60)
+			if h > 0:
+				msg = '{:02} hours {:02} minutes {:02} seconds'.format(int(h), int(m), int(s))
+			elif m > 0:
+				msg = '{:02} minutes {:02} seconds'.format(int(m), int(s))
+			else:
+				msg = '{:02} seconds'.format(int(s))
+			print(f'- running for: {msg}, Current FPS: {fps})')
+		i = 0
 	i += 1
 
