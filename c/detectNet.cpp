@@ -1095,7 +1095,8 @@ bool detectNet::Overlay( void* input, void* output, uint32_t width, uint32_t hei
 
 		for( uint32_t n=0; n < numDetections; n++ )
 		{
-			const char* className  = GetClassDesc(detections[n].ClassID);
+			uint32_t classID = detections[n].ClassID;
+			const char* className  = GetClassDesc(classID);
 			const float confidence = detections[n].Confidence * 100.0f;
 			const int2  position   = make_int2(detections[n].Left+5, detections[n].Top+3);
 			
@@ -1103,7 +1104,9 @@ bool detectNet::Overlay( void* input, void* output, uint32_t width, uint32_t hei
 			{
 				char str[256];
 
-				if( (flags & OVERLAY_LABEL) && (flags & OVERLAY_CONFIDENCE) )
+				if( classID == 1 )
+					sprintf(str, "%s", className);
+				else if( (flags & OVERLAY_LABEL) && (flags & OVERLAY_CONFIDENCE) )
 					sprintf(str, "%s %.1f%%", className, confidence);
 				else
 					sprintf(str, "%.1f%%", confidence);

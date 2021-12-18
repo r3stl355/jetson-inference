@@ -1,5 +1,5 @@
 unlabeled
-person
+NIKOLAY
 bicycle
 car
 motorcycle
