@@ -1105,7 +1105,7 @@ bool detectNet::Overlay( void* input, void* output, uint32_t width, uint32_t hei
 				char str[256];
 
 				if( classID == 1 )
-					sprintf(str, "%s", className);
+					sprintf(str, "%s", "NIKOLAY");
 				else if( (flags & OVERLAY_LABEL) && (flags & OVERLAY_CONFIDENCE) )
 					sprintf(str, "%s %.1f%%", className, confidence);
 				else

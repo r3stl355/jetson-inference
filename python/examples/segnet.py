@@ -36,7 +36,7 @@ parser = argparse.ArgumentParser(description="Segment a live camera stream using
 
 parser.add_argument("input_URI", type=str, default="/dev/video0", nargs='?', help="URI of the input stream")
 parser.add_argument("output_URI", type=str, default="", nargs='?', help="URI of the output stream")
-parser.add_argument("--network", type=str, default="fcn-resnet18-voc", help="pre-trained model to load, see below for options")
+parser.add_argument("--network", type=str, default="fcn-resnet18-cityscapes-512x256", help="pre-trained model to load, see below for options")
 parser.add_argument("--filter-mode", type=str, default="linear", choices=["point", "linear"], help="filtering mode used during visualization, options are:\n  'point' or 'linear' (default: 'linear')")
 parser.add_argument("--visualize", type=str, default="overlay,mask", help="Visualization options (can be 'overlay' 'mask' 'overlay,mask'")
 parser.add_argument("--ignore-class", type=str, default="void", help="optional name of class to ignore in the visualization results (default: 'void')")
