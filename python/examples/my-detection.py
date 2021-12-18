@@ -11,17 +11,18 @@ net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.6)
 camera = jetson.utils.videoSource("/dev/video0") 
 display = jetson.utils.videoOutput("display://0")
 
-checkpoint = dt.datetime.now()
+start = dt.datetime.now()
+checkpoint = start
 i = 0
 while display.IsStreaming():
 	img = camera.Capture()
 	detections = net.Detect(img)
 	display.Render(img)
-	fps = net.GetNetworkFPS()
-	display.SetStatus("Object Detection | {:.0f} FPS".format(fps))
-	if i % 100 == 0:
-		delta = dt.datetime.now() - checkpoint
-		if  delta.total_seconds() > 30:
+	fps = int(net.GetNetworkFPS())
+	display.SetStatus("Object Detection | {} FPS".format(fps))
+	if i % 100 == 0: 
+		if  (dt.datetime.now() - checkpoint).total_seconds() > 30:
+			delta = (dt.datetime.now() - start).total_seconds()
 			h, rem = divmod(delta.total_seconds(), 3600)
 			m, s = divmod(rem, 60)
 			if h > 0:
