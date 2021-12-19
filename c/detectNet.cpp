@@ -457,14 +457,19 @@ void detectNet::GenerateColor( uint32_t classID, uint8_t* rgb )
 	int b = 0;
 	int c = classID;
 
-	for( int j=0; j < 8; j++ )
-	{
-		r = r | (bitget(c, 0) << 7 - j);
-		g = g | (bitget(c, 1) << 7 - j);
-		b = b | (bitget(c, 2) << 7 - j);
-		c = c >> 3;
+	if ( classID == 1) {
+		r = 245;
+		g = 118;
+		b = 7;
+	} else {
+		for( int j=0; j < 8; j++ )
+		{
+			r = r | (bitget(c, 0) << 7 - j);
+			g = g | (bitget(c, 1) << 7 - j);
+			b = b | (bitget(c, 2) << 7 - j);
+			c = c >> 3;
+		}
 	}
-
 	rgb[0] = r;
 	rgb[1] = g;
 	rgb[2] = b;
@@ -1119,8 +1124,7 @@ bool detectNet::Overlay( void* input, void* output, uint32_t width, uint32_t hei
 				labels.push_back(std::pair<std::string, int2>(className, position));
 			}
 		}
-
-		font->OverlayText(output, format, width, height, labels, make_float4(255,255,255,255));
+		font->OverlayText(output, format, width, height, labels, make_float4(245,118,7,255));
 	}
 	
 	PROFILER_END(PROFILER_VISUALIZE);

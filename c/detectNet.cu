@@ -45,16 +45,23 @@ __global__ void gpuDetectionOverlay( T* input, T* output, int width, int height,
 		const detectNet::Detection det = detections[n];
 
 		// check if this pixel is inside the bounding box
-		if( fx >= det.Left && fx <= det.Right && fy >= det.Top && fy <= det.Bottom )
-		{
-			const float4 color = colors[det.ClassID];	
+		// || ((box_x > 8 || box_x < boxWidth - 8) && (box_y > 8 || box_y < boxHeight - 8))
+		if( fx >= det.Left && fx <= det.Right && fy >= det.Top && fy <= det.Bottom ) {
 
-			const float alpha = color.w / 255.0f;
-			const float ialph = 1.0f - alpha;
+			// Draw only a boder
+			int bw = 8;
+			if( (fx <= det.Left + bw || fx >= det.Right - bw || fy <= det.Top + bw || fy >= det.Bottom - bw )
+			// if( fx >= det.Left && fx <= det.Right && fy >= det.Top && fy <= det.Bottom )
+			{
+				const float4 color = colors[det.ClassID];	
 
-			px.x = alpha * color.x + ialph * px.x;
-			px.y = alpha * color.y + ialph * px.y;
-			px.z = alpha * color.z + ialph * px.z;
+				const float alpha = color.w / 255.0f;
+				const float ialph = 1.0f - alpha;
+
+				px.x = alpha * color.x + ialph * px.x;
+				px.y = alpha * color.y + ialph * px.y;
+				px.z = alpha * color.z + ialph * px.z;
+			}
 		}
 	}
 	
