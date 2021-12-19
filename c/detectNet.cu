@@ -73,8 +73,8 @@ __global__ void gpuDetectionOverlayBox( T* input, T* output, int imgWidth, int i
 	const int box_y = blockIdx.y * blockDim.y + threadIdx.y;
 
 	// Draw only a boder
-	int bw = 8;
-	if( box_x >= boxWidth || box_y >= boxHeight || (box_x > bw && box_x < boxWidth - bw && box_y > bw && box_y < boxHeight - bw) )
+	int bw = 12;
+	if( box_x >= boxWidth || box_y >= boxHeight )
 		return;
 
 	const int x = box_x + x0;
@@ -85,9 +85,15 @@ __global__ void gpuDetectionOverlayBox( T* input, T* output, int imgWidth, int i
 
 	T px = input[ y * imgWidth + x ];
 
-	const float alpha = color.w / 255.0f;
-	const float ialph = 1.0f - alpha;
-
+	// Border uses solid color
+	float alpha = 255.0f;
+	float ialph = 0.0f;
+	if( box_x > bw && box_x < boxWidth - bw && box_y > bw && box_y < boxHeight - bw ) {
+		// Inside a box make semi-transparent
+		alpha = color.w / 255.0f;
+		ialph = 1.0f - alpha;
+	}
+	
 	px.x = alpha * color.x + ialph * px.x;
 	px.y = alpha * color.y + ialph * px.y;
 	px.z = alpha * color.z + ialph * px.z;

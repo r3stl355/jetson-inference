@@ -1,22 +1,24 @@
 #!/usr/bin/python3
 
 import datetime as dt
-import time
+import argparse
 
 import jetson.inference
 import jetson.utils
 
-import argparse
-import sys
-
 from segnet_utils import *
-
-DETECT_NET = "ssd-mobilenet-v2"
-SEGMENT_NET = "fcn-resnet18-cityscapes"
 
 # parse the command line
 parser = argparse.ArgumentParser()
+parser.add_argument("--network", type=str, default="ssd-mobilenet-v2")
+parser.add_argument("--threshold", type=float, default=0.6)
 parser.add_argument("--segment", type=bool,  action="store_true")
+parser.add_argument("--segment-network", type=str, default="fcn-resnet18-cityscapes")
+parser.add_argument("--segment-filter-mode", type=str, default="linear", choices=["point", "linear"], help="filtering mode used during visualization, options are:\n  'point' or 'linear' (default: 'linear')")
+parser.add_argument("--segment-visualize", type=str, default="overlay,mask", help="Visualization options (can be 'overlay' 'mask' 'overlay,mask'")
+parser.add_argument("--segment-ignore-class", type=str, default="void", help="optional name of class to ignore in the visualization results (default: 'void')")
+parser.add_argument("--segment-alpha", type=float, default=100.0, help="alpha blending value to use during overlay, between 0.0 and 255.0 (default: 150.0)")
+parser.add_argument("--segment-stats", action="store_true", help="compute statistics about segmentation mask class output")
 
 opt = parser.parse_args()
 
@@ -29,15 +31,15 @@ def run_segment(img):
 	buffers.Alloc(img.shape, img.format)
 
 	# process the segmentation network
-	net.Process(img, ignore_class="void")
+	net.Process(img, ignore_class=opt.segment_ignore_class)
 
 	# generate the overlay
 	if buffers.overlay:
-		net.Overlay(buffers.overlay, filter_mode="linear")
+		net.Overlay(buffers.overlay, filter_mode=opt.segment_filter_mode)
 
 	# generate the mask
 	if buffers.mask:
-		net.Mask(buffers.mask, filter_mode="linear")
+		net.Mask(buffers.mask, filter_mode=opt.segment_filter_mode)
 
 	# composite the images
 	if buffers.composite:
@@ -47,17 +49,17 @@ def run_segment(img):
 	return buffers.output
 
 net, buffers = None, None
-title = f"Object Detection ({DETECT_NET})"
+
 if opt.segment:
 	# Runnig segmentation
-	title = f"Segmentation ({SEGMENT_NET})"
-	net = jetson.inference.segNet(SEGMENT_NET, sys.argv)
-	net.SetOverlayAlpha(opt.alpha)
+	opt.network = opt.segment_network
+	net = jetson.inference.segNet(opt.network)
+	net.SetOverlayAlpha(opt.segment_alpha)
 
-	# create buffer manager
+	# Segmentation uses a buffer manager
 	buffers = segmentationBuffers(net, opt)
 else:
-	net = jetson.inference.detectNet(DETECT_NET, threshold=0.6)
+	net = jetson.inference.detectNet(opt.network, threshold=opt.threshold)
 
 input = jetson.utils.videoSource("/dev/video0") 
 output = jetson.utils.videoOutput("display://0")
@@ -75,7 +77,7 @@ while output.IsStreaming():
 	
 	output.Render(res)
 	fps = int(net.GetNetworkFPS())
-	output.SetStatus("{} | {} FPS".format(title ,fps))
+	output.SetStatus("{} | {} FPS".format(opt.network ,fps))
 
 	if i % 100 == 0: 
 		if  (dt.datetime.now() - checkpoint).total_seconds() > 30:

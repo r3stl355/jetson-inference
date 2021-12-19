@@ -457,6 +457,7 @@ void detectNet::GenerateColor( uint32_t classID, uint8_t* rgb )
 	int b = 0;
 	int c = classID;
 
+	// First classID was skipped so first colour will be with ID=2
 	if ( classID == 2) {
 		r = 245;
 		g = 118;
@@ -1103,7 +1104,7 @@ bool detectNet::Overlay( void* input, void* output, uint32_t width, uint32_t hei
 			uint32_t classID = detections[n].ClassID;
 			const char* className  = GetClassDesc(classID);
 			const float confidence = detections[n].Confidence * 100.0f;
-			const int2  position   = make_int2(detections[n].Left+5, detections[n].Top+3);
+			const int2  position   = make_int2(detections[n].Left+14, detections[n].Top+14);
 			
 			if( flags & OVERLAY_CONFIDENCE )
 			{
