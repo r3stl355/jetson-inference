@@ -50,9 +50,7 @@ __global__ void gpuDetectionOverlay( T* input, T* output, int width, int height,
 
 			// Draw only a boder
 			int bw = 8;
-			if( (fx <= det.Left + bw || fx >= det.Right - bw || fy <= det.Top + bw || fy >= det.Bottom - bw )
-			// if( fx >= det.Left && fx <= det.Right && fy >= det.Top && fy <= det.Bottom )
-			{
+			if( fx <= det.Left + bw || fx >= det.Right - bw || fy <= det.Top + bw || fy >= det.Bottom - bw ) {
 				const float4 color = colors[det.ClassID];	
 
 				const float alpha = color.w / 255.0f;

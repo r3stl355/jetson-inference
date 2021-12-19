@@ -288,7 +288,7 @@ segNet* segNet::Create( const commandLine& cmdLine )
 	const char* modelName = cmdLine.GetString("model");
 
 	if( !modelName )
-		modelName = cmdLine.GetString("network", "fcn-resnet18-voc-320x320");
+		modelName = cmdLine.GetString("network", "fcn-resnet18-cityscapes-512x256");
 
 	// parse the model type
 	const segNet::NetworkType type = NetworkTypeFromStr(modelName);
