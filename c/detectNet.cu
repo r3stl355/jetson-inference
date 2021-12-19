@@ -45,7 +45,6 @@ __global__ void gpuDetectionOverlay( T* input, T* output, int width, int height,
 		const detectNet::Detection det = detections[n];
 
 		// check if this pixel is inside the bounding box
-		// || ((box_x > 8 || box_x < boxWidth - 8) && (box_y > 8 || box_y < boxHeight - 8))
 		if( fx >= det.Left && fx <= det.Right && fy >= det.Top && fy <= det.Bottom ) {
 
 			// Draw only a boder
@@ -73,7 +72,9 @@ __global__ void gpuDetectionOverlayBox( T* input, T* output, int imgWidth, int i
 	const int box_x = blockIdx.x * blockDim.x + threadIdx.x;
 	const int box_y = blockIdx.y * blockDim.y + threadIdx.y;
 
-	if( box_x >= boxWidth || box_y >= boxHeight )
+	// Draw only a boder
+	int bw = 8;
+	if( box_x >= boxWidth || box_y >= boxHeight || (box_x > bw && box_x < boxWidth - bw && box_y > bw && box_y < boxHeight - bw) )
 		return;
 
 	const int x = box_x + x0;

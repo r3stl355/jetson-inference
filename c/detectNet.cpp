@@ -457,7 +457,7 @@ void detectNet::GenerateColor( uint32_t classID, uint8_t* rgb )
 	int b = 0;
 	int c = classID;
 
-	if ( classID == 1) {
+	if ( classID == 2) {
 		r = 245;
 		g = 118;
 		b = 7;
@@ -503,7 +503,7 @@ bool detectNet::defaultColors()
 	}
 	else
 	{
-		// blue colors, except class 1 is green
+		// blue colors, except class 1 is orange
 		for( uint32_t n=0; n < numClasses; n++ )
 		{
 			if( n != 1 )
