@@ -12,13 +12,13 @@ from segnet_utils import *
 parser = argparse.ArgumentParser()
 parser.add_argument("--network", type=str, default="ssd-mobilenet-v2")
 parser.add_argument("--threshold", type=float, default=0.6)
-parser.add_argument("--segment", type=bool,  action="store_true")
+parser.add_argument("--segment", action="store_true")
 parser.add_argument("--segment-network", type=str, default="fcn-resnet18-cityscapes")
-parser.add_argument("--segment-filter-mode", type=str, default="linear", choices=["point", "linear"], help="filtering mode used during visualization, options are:\n  'point' or 'linear' (default: 'linear')")
-parser.add_argument("--segment-visualize", type=str, default="overlay,mask", help="Visualization options (can be 'overlay' 'mask' 'overlay,mask'")
-parser.add_argument("--segment-ignore-class", type=str, default="void", help="optional name of class to ignore in the visualization results (default: 'void')")
-parser.add_argument("--segment-alpha", type=float, default=100.0, help="alpha blending value to use during overlay, between 0.0 and 255.0 (default: 150.0)")
-parser.add_argument("--segment-stats", action="store_true", help="compute statistics about segmentation mask class output")
+parser.add_argument("--segment-filter-mode", dest="filer_mode", type=str, default="linear", choices=["point", "linear"], help="filtering mode used during visualization, options are:\n  'point' or 'linear' (default: 'linear')")
+parser.add_argument("--segment-visualize", dest="visualize", type=str, default="overlay,mask", help="Visualization options (can be 'overlay' 'mask' 'overlay,mask'")
+parser.add_argument("--segment-ignore-class", dest="ignore_class", type=str, default="void", help="optional name of class to ignore in the visualization results (default: 'void')")
+parser.add_argument("--segment-alpha", dest="alpha", type=float, default=100.0, help="alpha blending value to use during overlay, between 0.0 and 255.0 (default: 150.0)")
+parser.add_argument("--segment-stats", dest="stats", action="store_true", help="compute statistics about segmentation mask class output")
 
 opt = parser.parse_args()
 
@@ -31,15 +31,15 @@ def run_segment(img):
 	buffers.Alloc(img.shape, img.format)
 
 	# process the segmentation network
-	net.Process(img, ignore_class=opt.segment_ignore_class)
+	net.Process(img, ignore_class=opt.ignore_class)
 
 	# generate the overlay
 	if buffers.overlay:
-		net.Overlay(buffers.overlay, filter_mode=opt.segment_filter_mode)
+		net.Overlay(buffers.overlay, filter_mode=opt.filter_mode)
 
 	# generate the mask
 	if buffers.mask:
-		net.Mask(buffers.mask, filter_mode=opt.segment_filter_mode)
+		net.Mask(buffers.mask, filter_mode=opt.filter_mode)
 
 	# composite the images
 	if buffers.composite:
@@ -54,7 +54,7 @@ if opt.segment:
 	# Runnig segmentation
 	opt.network = opt.segment_network
 	net = jetson.inference.segNet(opt.network)
-	net.SetOverlayAlpha(opt.segment_alpha)
+	net.SetOverlayAlpha(opt.alpha)
 
 	# Segmentation uses a buffer manager
 	buffers = segmentationBuffers(net, opt)

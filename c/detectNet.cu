@@ -86,7 +86,7 @@ __global__ void gpuDetectionOverlayBox( T* input, T* output, int imgWidth, int i
 	T px = input[ y * imgWidth + x ];
 
 	// Border uses solid color
-	float alpha = 255.0f;
+	float alpha = 1.0f;
 	float ialph = 0.0f;
 	if( box_x > bw && box_x < boxWidth - bw && box_y > bw && box_y < boxHeight - bw ) {
 		// Inside a box make semi-transparent
